@@ -2,6 +2,16 @@ const key = require("../keys/index")
 const jwt = require("jsonwebtoken")
 
 
+/**
+ * Функция промежуточной обработки
+ * проверяет валидность токена
+ * @func
+ * @name auth
+ * @param req объект запроса
+ * @param res объект ответа
+ * @param next функция продолжения выполнения запроса
+ */
+
 function auth(req, res, next) {
   try {
     let token = req.headers["authorization"]

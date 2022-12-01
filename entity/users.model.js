@@ -1,5 +1,10 @@
 const {Schema,model} = require ('mongoose')
 
+/**
+ * Модель коллекции file
+ * @class users
+ */
+
 const usersSchema = new Schema ({
     name: {
         type: String,

@@ -2,49 +2,79 @@ const bcrypt = require("bcryptjs")
 const User = require("../entity/users.model")
 const generateToken = require("../service/jwt.service")
 
+/**
+ * Объект с методами сущности User
+ * @name userService
+ */
+
 const userService = {
+  /**
+   * Метод создает новго пользователя
+   * @param {object} registerData Объект параметров нового пользователя
+   * @param {string} registerData.name
+   * @param {string} registerData.email
+   * @param {string} registerData.password
+   * @returns {Object} {code,{newUser,jwt}}
+   */
+
   async create(registerData) {
-    const { name, email, password } = registerData
-    const candidate = await User.findOne({ email })
-    if (candidate) {
-      return {
-        code: 400,
-        message: `a user with this  ${email} already exists`,
-      }
-    } else {
-      const hashPassword = await bcrypt.hash(password, 10)
-      const user = new User({ name, email, password: hashPassword })
+    try {
+      const { name, email, pass } = registerData
+      const candidate = await User.findOne({ email })
+      if (candidate) {
+        return {
+          code: 400,
+          message: `a user with this  ${email} already exists`,
+        }
+      } else {
+        const hashPassword = await bcrypt.hash(pass, 10)
+        const user = new User({ name, email, password: hashPassword })
 
-      const createdUser = await user.save()
+        let createdUser = await user.save()
+        const { password, ...otherParams } = createdUser._doc
 
-      const token = generateToken(createdUser)
-      return {
-        code: 200,
-        token,
+        const token = generateToken(createdUser)
+        return {
+          code: 200,
+          payload: { ...otherParams, token },
+        }
       }
+    } catch (error) {
+      console.log(error)
     }
   },
 
+/**
+ * 
+ * @param {Object} loginaData Объект с параметрами для аутентификации пользователя 
+ * @param {string} registerData.email
+ * @param {string} registerData.password
+ * @returns {jwt}  jwt
+ */
+
   async login(loginaData) {
-    const { email, password } = loginaData
-    const candidate = await User.findOne({ email })
-    if (!candidate) {
-      return {
-        code: 404,
-        message: "Wrong password or email",
-      }
-    } 
-    await bcrypt.compare(password, candidate.password, function (err, valid) {
-      if (!valid) {
+    try {
+      const { email, password } = loginaData
+      const candidate = await User.findOne({ email })
+      if (!candidate) {
         return {
           code: 404,
           message: "Wrong password or email",
         }
       }
-    })
-    console.log("token")
-    const token = await generateToken(candidate)
-    return { code: 200, token }
+      await bcrypt.compare(password, candidate.password, function (err, valid) {
+        if (!valid) {
+          return {
+            code: 404,
+            message: "Wrong password or email",
+          }
+        }
+      })
+      const token = await generateToken(candidate)
+      return { code: 200, token }
+    } catch (error) {
+      console.log(error)
+    }
   },
 }
 

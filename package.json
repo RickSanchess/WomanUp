@@ -18,12 +18,14 @@
     "hbs": "^4.1.1",
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.11.9",
+    "mongoose": "^6.7.4",
     "mongoose-paginate-v2": "^1.3.13",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.6"
   },
   "devDependencies": {
+    "jsdock": "^1.0.4",
     "prettier": "^2.7.1"
   }
 }

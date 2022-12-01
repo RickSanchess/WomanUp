@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 const app = require("../app")
 const debug = require("debug")("backtodo:server")
 const http = require("http")
 const mongoose = require("mongoose")
 const key = require("../keys/index")
-require('dotenv').config()
 
-console.log('реализовать возвращение токена при регистрации')
+console.log("")
+console.log("скачивание файла")
+console.log("почитать как опубликовать апишку")
+console.log("настроить корс")
+console.log("задеплоить")
+
+/**
+ * @func
+ * Функция подключения к базе данных
+ */
 async function start() {
   try {
     await mongoose.connect(key.MONGODB_URI, {
