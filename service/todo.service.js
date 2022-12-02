@@ -1,7 +1,6 @@
-/**
- * Module dependencies.
- */
 const Todo = require("../entity/todos.model")
+const File = require("../entity/file.model")
+const key = require("../keys/index")
 
 /**
  * Объект с методами сущности Todo
@@ -124,6 +123,22 @@ const todoService = {
     return {
       code: 200,
       updateTodo,
+    }
+  },
+
+  async getFile(fileId) {
+    try {
+      let { filename } = await File.findById(fileId)
+
+      const filepath = new URL(filename, key.URL)
+      console.log(filepath)
+
+      return {
+        code: 200,
+        filepath,
+      }
+    } catch (error) {
+      console.log(error)
     }
   },
 }

@@ -4,15 +4,17 @@ const userService = require("../service/user.service")
 
 /**
  * создание пользователя
- * @name user/post
+ * @name post/user
  * @param {Object} req Объект запроса
  * @param {Object} req.body Объект запроса
  * @return {JSON} payload:{newUser,jwt}
  */
 
-router.post("/register", async (req, res) => {
+router.post("/register",async (req, res) => {
   try {
     const { code, ...payload } = await userService.create(req.body)
+    console.log(code)
+    console.log(payload)
     res.status(code).json(payload)
   } catch (e) {
     console.log(e)
@@ -21,12 +23,12 @@ router.post("/register", async (req, res) => {
 
 /**
  * Аутентификация пользователя
- * @name user/post
+ * @name post/user
  * @param {object} req Объект запроса
  * @return {JSON} {token}
  */
 
-router.post("/login", async (req, res) => {
+router.post("/login",async (req, res) => {
   try {
     const { code, ...payload } = await userService.login(req.body)
     res.status(code).json(payload)

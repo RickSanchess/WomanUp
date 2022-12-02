@@ -5,11 +5,19 @@ const auth = require("../middleware/auth.middleware")
 const user = require("../middleware/user.middleware")
 const multer = require("multer")
 const key = require("../keys/index")
-const upload = multer({ dest: key.UPLOAD_DIR })
+
+const storage = multer.diskStorage({
+  destination: key.UPLOAD_DIR,
+  filename: (req, file, callback)=> {
+    callback(null, file.originalname)
+  }
+})
+const upload = multer({storage})
+
 
 /**
  * Создание заметки
- * @name todo/post
+ * @name post/todo
  * @callback  auth middleware проверяет валидность jwt
  * @callback  user middleware
  * @callback  upload middleware, создает объект file и прикрепляет его к объекту res
@@ -35,7 +43,7 @@ router.post(
 
 /**
  * Получение заметки/заметок
- * @name todo/get
+ * @name get/todo
  * @callback  auth middleware проверяет валидность jwt
  * @callback  user middleware
  * @param {object} req Объект запроса
@@ -55,7 +63,7 @@ router.get("/", auth, user, async (req, res) => {
 
 /**
  * удаление заметки
- * @name todo/delete
+ * @name delete/todo
  * @callback  auth middleware проверяет валидность jwt
  * @param {object} req Объект запроса
  * @param {object} req.params Объект параметров запроса
@@ -75,7 +83,7 @@ router.delete("/delete/:id", auth, async (req, res) => {
 
 /**
  * Изменение заметки
- * @name todo/put
+ * @name put/todo
  * @callback auth middleware проверяет валидность jwt
  * @callback user middleware
  * @param {object} req Объект запроса
@@ -86,7 +94,7 @@ router.put(
   "/:id",
   auth,
   user,
-  async (req, res) => {
+   async (req, res) => {
     try {
       const { code, ...payload } = await todoService.update(req)
       res.status(code).send(payload)
@@ -97,7 +105,7 @@ router.put(
 
   /**
    * Добавляет файл к заметке
-   * @name todo/post
+   * @name post/todo/file
    * @callback auth middleware проверяет валидность jwt
    * @callback upload middleware, создает объект file и прикрепляет его к объекту res
    * @param {object} req Объект запроса
@@ -110,7 +118,7 @@ router.put(
     "/:todoId",
     auth,
     upload.single("file_save", 30),
-    async (req, res) => {
+     async (req, res) => {
       try {
         const { code, ...payload } = await todoService.addFile(
           req.file,
@@ -125,7 +133,7 @@ router.put(
 
   /**
    * Удаляет файл у заметки
-   * @name todo/delete
+   * @name delete/todo/file
    * @callback auth middleware проверяет валидность jwt
    * @param {object} req Объект запроса
    * @param {object} req.query Объект строки запроса
@@ -136,7 +144,6 @@ router.put(
 
   router.delete("/file", auth, async (req, res) => {
     try {
-      console.log("router")
       const { code, ...payload } = await todoService.deleteFile(
         req.query.fileId,
         req.query.todoId
@@ -144,6 +151,25 @@ router.put(
       res.status(code).send(payload)
     } catch (e) {
       console.log(e)
+    }
+  }),
+
+  /**
+   * Возвращает путь файла
+   * @name get/todo/file
+   * @callback auth middleware проверяет валидность jwt
+   * @param {object} req Объект запроса
+   * @param {object} req.params.todoId Идентификатор заметки
+   * @returns {JSON} {path}
+   */
+
+  router.get('/file/:fileId', auth, async(req, res) => {
+    try {
+      const {code, ...payload} =await todoService.getFile(req.params.fileId)
+      res.download(payload)
+
+    } catch (error) {
+      
     }
   })
 )

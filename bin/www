@@ -16,7 +16,7 @@ console.log("задеплоить")
  * @func
  * Функция подключения к базе данных
  */
-async function start() {
+async function dbConnect() {
   try {
     await mongoose.connect(key.MONGODB_URI, {
       useNewUrlParser: true,
@@ -26,7 +26,7 @@ async function start() {
     console.log(e)
   }
 }
-start()
+dbConnect()
 /**
  * Get port from environment and store in Express.
  */
